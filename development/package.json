@@ -1,0 +1,25 @@
+{
+  "name": "koala-dev",
+  "version": "1.0.0",
+  "description": "online learning paltform",
+  "main": "index.js",
+  "scripts": {
+    "test": "start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://gitlab.appinvent.in/KoalaTalk/Backend.git"
+  },
+  "keywords": [
+    "online",
+    "learning"
+  ],
+  "author": "Appinventiv",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.4",
+    "joi": "^13.0.2",
+    "jsonwebtoken": "^8.1.0",
+    "nodemailer": "^4.4.1"
+  }
+}

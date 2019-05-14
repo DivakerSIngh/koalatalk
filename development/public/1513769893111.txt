@@ -1,0 +1,3 @@
+http://localhost:4200/student/profile/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVhMzhjMTFhNTE1MzE4MDI4ZGRmMjk0MCIsImlhdCI6MTUxMzY2ODg5MCwiZXhwIjoxNTE2MjYwODkwfQ.Yx2CgFGyPoCGusrP1zV-Npvxc9KWQdyRhvHNM118DhE
+http://localhost:4200/student/student-profile-third-step
+http://localhost:4200/student/student-profile-fourth-step

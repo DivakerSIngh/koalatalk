@@ -1,0 +1,96 @@
+<!-- <script>var HOST_ADDRESS='<%= hostAddress %>';</script>  -->
+<!-- <script src='https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js'></script> -->
+<!-- <script src='http://localhost:1337/js/lib/adapter.js'></script> -->
+<!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>		 -->
+<!-- <script src='http://localhost:1337/js/meeting.js'></script> -->
+<!-- <script src='http://localhost:1337/js/room.js'></script> -->
+<!-- <link rel="stylesheet" type="text/css" href="http://localhost:1337/css/room.css" media="screen" /> -->
+
+<!-- old code start -->
+
+<!-- <input type="hidden" name="userId" id="userId" [(ngModel)]="userId">
+<input type="hidden" name="userFullName" id="userFullName" [(ngModel)]="userFullName">
+<input type="hidden" name="userEmail" id="userEmail" [(ngModel)]="userEmail">
+<input type="hidden" name="userImage" id="userImage" [(ngModel)]="userImage">
+<input type="hidden" name="userImage" id="dynamicGeneratedId">
+
+
+<div class="container">
+  <div id="videos">
+    <div id="videosWrapper">
+      <div id="localVideoWrap" class='videoWrap'>
+        <video class="videoBox" id="localVideo" autoplay></video>
+      </div>
+    </div>
+  </div>
+</div>
+<input type="text" id="txtMessage">
+
+<div class="chatscreen-wrapp">
+  <h2 class="heading">Chat</h2>
+  <div class="chat-history" >
+    <div class="incoming-chat chat-column">
+     <h2 class="user_name">uma maurya</h2>
+     <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Hic obcaecati doloribus inventore facere,</p> 
+    </div>
+    <div class="outgoing-chat chat-column"> 
+      <h2 class="user_name">uma maurya</h2>
+      <p>saepe omnis necessitatibus animi repellat, iusto, dicta atque amet repellendus totam quibusdam! Sunt, exercitationem corrupti. Dicta, at.</p>
+    </div>
+  </div>
+
+
+
+<input type="button" value="send" id="btnSendMessage">
+<p id=""></p>
+
+
+<i id="videoMenu" class="fa fa-hand-stop-o" style="font-size:30px;color:red">Toogle Video</i><br>
+<span id="micMenu" class="glyphicon glyphicon-volume-off" style="font-size:30px;color:red">Toogle Mic</span>
+<span id="leaveRoom" class="glyphicon glyphicon-volume-off" style="font-size:30px;color:red">Leave Room</span> -->
+
+
+<!-- old code end -->
+
+
+
+<input type="hidden" name="userId" id="userId" [(ngModel)]="userId">
+<input type="hidden" name="userFullName" id="userFullName" [(ngModel)]="userFullName">
+<input type="hidden" name="userEmail" id="userEmail" [(ngModel)]="userEmail">
+<input type="hidden" name="userImage" id="userImage" [(ngModel)]="userImage">
+<input type="hidden" name="userImage" id="dynamicGeneratedId">
+
+  <div class="videosscreen-wrap">
+    <div id="videos" class="clearfix">
+        <div id="videosWrapper" class="clearfix">
+        <div id="localVideoWrap" class='videoWrap'>
+         <video class="videoBox" id="localVideo" autoplay></video>
+        </div>
+       </div>
+    </div>
+    <div class="video-component">
+      <div id="videoMenu" class="video-pause icons"> <img src="assets/images/video-icon.svg" alt=""></div>
+      <span id="micMenu" class="voice-muted icons"><img src="assets/images/muted.svg" alt=""></span>
+      <span id="leaveRoom" class="cancel-call icons"><img src="assets/images/phone.svg" alt=""></span>
+    </div>
+
+    <div class="chatscreen-wrapp">
+      <h2 class="heading">Chat</h2>
+      <div class="chat-history" id="chatHistory">
+        <!-- <div class="incoming-chat chat-column" >
+         <h2 class="user_name">Vishnu</h2>
+         <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Hic obcaecati doloribus inventore facere,</p> 
+        </div>
+        <div class="outgoing-chat chat-column"> 
+          <h2 class="user_name">Shailesh</h2>
+          <p>saepe omnis necessitatibus animi repellat, iusto, dicta atque amet repellendus totam quibusdam! Sunt, exercitationem corrupti. Dicta, at.</p>
+        </div> -->
+      </div>
+
+      <div class="chat-button-wrapper">
+        <textarea name="" id="" id="txtMessage" rows="1" placeholder="Message"></textarea>
+        <!-- <input type="text" id="txtMessage" placeholder="Message"> -->
+        <button type="button" id="btnSendMessage" class=""><img src="assets/images/send.svg" alt=""></button>
+      </div>
+    </div>
+  </div>

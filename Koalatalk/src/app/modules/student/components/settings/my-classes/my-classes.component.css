@@ -1,0 +1,29 @@
+.datasecwrapper-inner {
+    padding-bottom: 20px;
+}
+
+.column-wrap {
+    border: solid 1px #e6e6e6;
+    border-radius: 6px;
+    margin: 0 0 50px 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.sub-heading {
+    font-size: 15px;
+    color: #52686e;
+    font-weight: 500;
+    background: #f9fafb;
+    padding: 15px 25px;
+    border-bottom: solid 1px #eeeeee;
+}
+
+.detail-wrapper {
+    padding: 20px 25px;
+    border-bottom: solid 1px #eeeeee;
+}
+
+.detail-wrapper.classes-check {
+    padding-bottom: 15px;
+}

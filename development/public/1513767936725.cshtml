@@ -1,0 +1,383 @@
+﻿@*<script src="~/ChatDiscussionClient/jquery.signalR-2.2.1.js"></script>
+    <script src="signalr/hubs"></script>*@
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.js"></script>
+<script src="~/ChatDiscussionClient/app.js"></script>
+<script src="~/ChatDiscussionClient/factory.js"></script>
+<script src="~/ChatDiscussionClient/config.js"></script>
+
+
+
+<div ng-app="chatmodule" ng-controller="chatcontroller">
+    <div class="sideNav-Right" id="sideNav-Right">
+        <div class="sideNav-Right-inner">
+            <nav class="right-sidenav">
+                <div class="msg-alert">All Discussion <span class="badge badge-msg">@*03*@</span><a href="javascript:void(0);" class="circle" data-toggle="modal" data-target=".addnew-discussion-modal"><span><img src="~/images/chat-add.png" alt="" /></span></a></div>
+
+                @*<ul class="full-height-scrollbar">
+                        <li ng-repeat="member in memberlist" ng-click="opnechat(member.memberId,member.Member_Name, member.discussionid)" ng-class="ActiveClassOrNotForMember(member)">
+                            <a href="javascript:void(0);">
+
+                                <figure> <img ng-src="{{member.Image}}" alt="" /> </figure>
+                                <div class="user">
+                                    <p class="name">{{member.Member_Name}}</p>
+                                    <p class="msg">{{member.lastmessge}} </p>
+                                    <span class="time">{{member.chatDate}}</span>
+                                </div>
+                            </a>
+                        </li>
+                    </ul>*@
+
+                <ul class="full-height-scrollbar">
+                    <li ng-repeat="discussion in allDiscussion" ng-click="openThreadesPopUp(discussion.memberId,discussion.discussionName,discussion.discussionId)" ng-class="applyActiveclassInDiscussion(discussion.discussionId)">
+                        <a href="javascript:void(0);">
+
+                            <figure> <img ng-src="{{discussion.displayPicture}}" alt="" /> </figure>
+                            <div class="user">
+                                <p class="name">{{discussion.discussionName}}</p>
+                                <p class="msg">{{discussion.projectName}} </p>
+                                @*<span class="time">{{member.chatDate}}</span>*@
+                            </div>
+                        </a>
+                    </li>
+                </ul>
+
+
+            </nav>
+        </div>
+
+        <div class="chatbox-position" id="Chatmsg-box">
+            <div class="chatbox">
+                <div class="chatheader" id="chatheader">
+                    <div class="main">
+                        <h1>{{selectedname}}</h1>
+                        <a href="javascript:void(0);" id="Cross-chatbtn"><img src="../../images/cross.png" alt="" ng-click="closeThreadPopup()" /></a>
+                    </div>
+                    <div class="submain">
+                        @*<h2>{{TopDiscussion.Discussion_Name}}</h2>*@
+                        <h2>{{topthreadName}}</h2>
+
+
+                        <div class="btn-section">
+                            <ul>
+                                <li ng-click="openAddRemovePopup()"><a href="javascript:void(0);" @*data-target=".Createnew-modal"*@><img src="~/images/chat-pushpin.png" alt="" /></a></li>
+                                <li ng-click="deletediscussion(TopDiscussion.DiscussionId,TopDiscussion.Discussion_Name)"><a href="javascript:void(0);"><img src="~/images/chat-trash.png" alt="" /></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="mid-section" id="chat-section">
+                    <div class="midcenter full-height-chat" style="overflow:auto;">
+                        @*<div class="chat-msg" ng-repeat="items in allchat">
+                                <figure>
+                                    <img ng-src="{{items.image}}" alt="" />
+                                </figure>
+                                <div class="data">
+                                    <h3>{{items.Member_Name}}:</h3>
+                                    <span class="time">{{items.ChatDate}}</span>
+                                    <p>{{items.ChatText}}</p>
+                                </div>
+                            </div>*@
+
+                        <div class="chat-msg" ng-repeat="item in allThreadPoints">
+                            <figure>
+                                <img ng-src="{{item.profilePictureFile}}" alt="" />
+                            </figure>
+                            <div class="data">
+                                <h3>{{item.fullName}}</h3>
+                                <span class="time">{{item.createdDate}}</span>
+                                <p>{{item.points}}</p>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="aside-col">
+                        <div class="aside-ul full-height-chat">
+                            <ul class="">
+                                @*<li ng-repeat="item in DiscussionNameBasedonSelection" ng-click="changechat(item)" activevalue="active{{item.Row}}" ng-class="ActiveClassOrNot(item)">
+                                        <a href="javascript:void(0);" class="circle"><span>{{item.Row}}.</span></a>
+                                    </li>*@
+
+                                <li ng-repeat="item in allThreadsofDiscussion" ng-class="applyActiveclassThreads(item.threadId)" ng-click="changeThreads(item)">
+                                    <a href="javascript:void(0);" class="circle"><span>{{$index+1}}.</span></a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="add"><a href="javascript:void(0);" class="circle" data-toggle="modal" data-target=".addnew-chat-modal"><span><img src="~/images/chat-add.png" alt="" /></span></a></div>
+                    </div>
+                </div>
+                <div class="chatfooter">
+                    <textarea id="" placeholder="Write a comment..." name="message" ng-model="$parent.threadPoints" ng-enter="SaveThreadPoints()"></textarea>
+                    @*<a href="javascript:void(0);"><img src="../../images/send.png" alt="" ng-click="SaveChat()" /></a>*@
+                    <a href="javascript:void(0);"><img src="../../images/send.png" alt="" ng-click="SaveThreadPoints()" /></a>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade addnew-chat-modal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg chat-modelpopup">
+                <div class="modal-content">
+                    <div class="row">
+                        <form ng-submit="saveNewThread()">
+                            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                <div class="header">
+                                    <h1>Create New Thread </h1>
+                                </div>
+                                <div class="content">
+                                    <p>Please enter name for your new Thread</p>
+                                    <input type="text" ng-model="newThreadName" value="" name="newThreadName" class="form-control" required />
+
+                                </div>
+                                <div class="clear"></div>
+                                <div class="footer">
+                                    <button type="submit" class="btn-dash btn-profile btn-edit-profile-add">Save</button>
+                                    <button type="submit" ng-click="cleartextbox()" class="btn-dash btn-profile btn-edit-profile-close" data-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade Createnew-modal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg createnew-model">
+                <div class="modal-content">
+                    <div class="row">
+
+
+                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                            <div class="header">
+                                <h1><img src="../../images/create-pushpin.png" alt="" />Create New Discussion</h1>
+                            </div>
+
+                            <div class="col-md-12 mb10">
+
+                                <div class="form-group">
+                                    <form ng-submit="addNewMemeber()">
+                                        <select class="form-control select2me" name="memberList[]" id="idMemberList" multiple="multiple" required>
+                                            <option ng-repeat="value in memberlist" value="{{value.memberId}}">
+                                                {{value.Member_Name}}
+                                            </option>
+                                        </select>
+
+                                        <input type="submit" name="name" value="Add New Member" />
+                                    </form>
+                                </div>
+                            </div>
+
+
+                            <div class="col-xs-12 col-sm-5 col-md-5 col-lg-5 p-xxxs">
+                                <div class="content left">
+                                    <h2><a href="javascript:void(0);">Added Members</a></h2>
+                                    <div class="full-height-newchat full-height-checkbox">
+                                        <div class="check" ng-repeat="item in exsitingMemberIndiscussion">
+
+                                                @*<input id="{{item.memberId}}" class="checkbox-input" type="checkbox" value=""
+                                                    ng-model="selected" ng-checked="exists(item)"
+                                                     ng-click="toggleSelection(item)" />*@
+
+                               
+                                            @*<input class="checkbox-input" type="checkbox" value="" />*@
+                                            <label for="{{item.memberId}}" class="checkbox-label">
+                                                <figure><img ng-src="{{item.profilePictureFile}}" alt="" /></figure>
+                                                <span>{{item.fullName}} ({{item.emailAddress}})</span>
+                                            </label>
+                                            <div ng-click="deleteMember(item)">
+
+                                                delete 
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            @*<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6 p-xxxs">
+                                                                <div class="content right">
+                                                                    <div class="inner">
+                                                                        <h2><a href="javascript:void(0);">Added Discussion Members</a></h2>
+                                                                        <ul>
+                                                                            <li ng-repeat="item in selectedMember"><figure><img ng-src="{{item.Image}}" alt="" /></figure></li>
+
+                                                                        </ul>
+                                                                    </div>
+                                                                    <div class="circle-check full-height-newchat full-height-circlechatbox">
+
+
+
+                                                                        <div class="check" ng-repeat="item in discussionsServer">
+                                                                            <input id="" class="checkbox-input" type="checkbox" value="" checked />
+                                                                            <label for="" class="checkbox-label circle-label"><span>{{item.points}}</span></label>
+
+                                                                        </div>
+                                                                        <div class="check" ng-repeat="item in discussions">
+                                                                            <input id="" class="checkbox-input" type="checkbox" checked value="" ng-click="toggleSelectionPoints(item)" />
+                                                                            <label for="" class="checkbox-label circle-label"><span>{{item.discussion}}</span></label>
+                                                                        </div>
+                                                                        <div class="check">
+                                                                            <input type="text" ng-model="$parent.discussion" class="form-control" ng-enter="AddDiscussion()" />
+                                                                            <img src="../../images/add-black.png" alt="" ng-click="AddDiscussion()">
+                                                                        </div>
+                                                                    </div>
+                                </div>
+                                                            </div>
+                                                            <div class="numbering-chat">
+                                                                <div class="content number">
+                                                                    <div class="inner">
+                                                                        <ul class="bullet">
+                                                                            <li ng-repeat="item in DiscussionNameBasedonSelection" ng-click="changechat(item)" activevalue="active{{item.Row}}" ng-class="ActiveClassOrNot(item)">
+                                                                                <a href="javascript:void(0);" class="circlenew"><span>{{item.Row}}.</span></a>
+                                                                            </li>
+                                                                        </ul>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="clear"></div>
+                                                            <div class="createnewfooter">
+                                                                <button type="submit" ng-click="GetSavedData()" class="btn-dash btn-profile btn-edit-profile-add">Save</button>
+                                                                <button type="submit" class="btn-dash btn-profile btn-edit-profile-close" data-dismiss="modal">Close</button>
+                                                            </div>*@
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="modalConfirmYesNo" class="modal fade">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button"
+                                class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h4 id="lblTitleConfirmYesNo" class="modal-title">Confirmation</h4>
+                    </div>
+                    <div class="modal-body">
+                        Are you sure want to delete Chat for {{toBeDeltedDiscussionName}} ?
+                    </div>
+                    <div class="modal-footer">
+                        <button id="btnDeltedYesConfirm" ng-click="DeltedYesConfirm()"
+                                type="button" class="btn btn-primary">
+                            Yes
+                        </button>
+                        <button id="btnNoConfirmYesNo"
+                                type="button" class="btn btn-default" data-dismiss="modal">
+                            No
+                        </button>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="newChatConfirmation" class="modal fade">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button"
+                                class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h4 id="lblTitleConfirmYesNo" class="modal-title">Confirmation</h4>
+                    </div>
+                    <div class="modal-body">
+                        New discussion has been created successfully.
+                    </div>
+                    <div class="modal-footer">
+                        <button id="btnNoConfirmYesNo"
+                                type="button" class="btn btn-default" data-dismiss="modal">
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="notification" class="modal fade">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button"
+                                class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h4 id="lblTitleConfirmYesNo" class="modal-title">Confirmation</h4>
+                    </div>
+                    <div class="modal-body">
+                        {{notification}}
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        @*New Changes 22 aug*@
+
+        <div class="modal fade addnew-discussion-modal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg chat-modelpopup">
+                <div class="modal-content">
+                    <div class="row">
+                        <form name="formNewDiscussion" ng-submit="SavenewDiscussion()">
+                            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                <div class="header">
+                                    <h1>Create New Discussion</h1>
+                                </div>
+                                <div class="content">
+                                    <p>Please enter name for your new discussion</p>
+
+
+                                    <input type="text" id="newDiscussionName" name="newDiscussionName" class="form-control" required />
+
+
+                                    <p>Please select Project</p>
+
+                                    <div class="col-md-12 mb10">
+                                        <div class="form-group">
+
+                                            <select class="form-control select2me" name="drpToProjectList[]" id="idProjectList" required>
+                                                <option ng-repeat="value in projectList" value="{{value.Id}}">{{value.DisplayText}}</option>
+                                            </select>
+
+
+
+
+                                        </div>
+                                    </div>
+                                    @*<p>Please select Member</p>
+                                        <i class="fa fa-exclamation-triangle required ml5" ng-show="chatNameRequired" title="" data-toggle="tooltip" data-original-title="This field is required"></i>
+                                        <div class="col-md-12 mb10">
+
+                                            <div class="form-group">
+
+                                                    <select class="form-control select2me" name="memberList[]" id="idMemberList" multiple="multiple" required>
+                                                        <option ng-repeat="value in memberlist" value="{{value.memberId}}">{{value.Member_Name}}</option>
+                                                    </select>
+
+                                            </div>
+                                        </div>*@
+                                </div>
+
+                                <div class="clear"></div>
+                                <div class="footer">
+                                    <button type="submit" class="btn-dash btn-profile btn-edit-profile-add">Save New Discussion</button>
+                                    <button type="submit" class="btn-dash btn-profile btn-edit-profile-close" data-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+    .circle-check.full-height-newchat.full-height-circlechatbox {
+        overflow-x: hidden;
+        overflow-y: scroll;
+    }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
+@ClearDrive.Web.Common.ContentHelper.RenderStyle("~/bundles/SendToMeRemindercss")

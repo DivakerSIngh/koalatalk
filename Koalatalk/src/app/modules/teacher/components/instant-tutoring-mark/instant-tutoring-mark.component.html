@@ -1,0 +1,9 @@
+<div class="toggle-active">
+    <p class="wrap-toggle"> 
+            {{'i-am-available-for-instant-tutoring' | translate}}
+        <label class="switch-slidetoggle">
+            <input type="checkbox" value="" (checked)="isChecked=!isChecked" (change)="changeInstant()" [(ngModel)]="isChecked" />
+            <span class="slider"><span class="on">{{'on' | translate}}</span> &nbsp; &nbsp; <span class="off">{{'off' | translate}}</span></span>
+        </label>
+    </p>
+</div>

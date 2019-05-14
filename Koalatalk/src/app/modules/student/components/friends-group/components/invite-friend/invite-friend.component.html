@@ -1,0 +1,254 @@
+<div class="datasecwrapper-inner friendlist">
+    <ul class="breadcrumb">
+        <li>
+            <a href="javascript:void(0);" [routerLink]="['../tabs/friends']">
+                {{'friends' | translate}}  </a>
+        </li>
+        <li> {{'invite-friends' | translate}}</li>
+    </ul>
+    <div class="searchWrapper2 clearfix">
+        <div class="input-wrap">
+            <input class="search" maxlength="25" [(ngModel)]="search" (keydown)="searchFriends($event)" placeholder="{{'search-friends-by-name-by-email' | translate}}" type="text">
+            <div class="searchbtnicon">
+                <img src="assets/images/search.png" alt="" (click)="searchFriendsUsingButton()"/>
+            </div>
+        </div>
+    </div>
+    <div class="invite-friend-detail">
+        <div class="row">
+
+            <div class="col-sm-12 col-md-12 col-lg-12 pd5" *ngIf="norecordFound">
+                <div class="userdetail-column clearfix">
+                    <div class="leftin">
+                        <h3>{{'no-record-found' | translate}}</h3>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-12 col-md-12 col-lg-6 pd5" *ngFor="let fr of searchFriendList; let i=index">
+                <div class="userdetail-column clearfix">
+                  
+                    <figure class="image" [style.background-image]="'url('+ fr.image +')'"></figure>
+                    <div class="leftin">
+                        <h3>{{fr.firstName}} {{fr.lastName}}</h3>
+                        <label class="label-withicon full-width">
+                            <span class="icon">
+                                <img alt="" src="assets/images/marker.png">
+                            </span>
+                            <strong> {{'from' | translate}}:</strong>{{fr.counrty}}
+                        </label>
+                        <label class="label-withicon full-width">
+                            <span class="icon">
+                                <img alt="" src="assets/images/speaks-icon.png">
+                            </span>
+                            <strong> {{'speaks' | translate}}:</strong>
+
+                            <ng-container *ngIf="fr.languages; else speakLanguages">
+                                {{fr.languages}}
+                            </ng-container>
+                            <ng-template #speakLanguages>
+                                {{fr.speakLanguage}}
+                            </ng-template>
+                        </label>
+                        <label class="label-withicon full-width">
+                            <span class="icon">
+                                <img alt="" src="assets/images/student-icon.png">
+                            </span>
+                            <strong *ngIf="fr.roleId==4">{{'student' | translate}}</strong>
+                            <strong *ngIf="fr.roleId==3">{{'tutor' | translate}}</strong>
+                                 <!-- {{roleOfFriend(fr.roleId)}} </strong> -->
+                        </label>
+                    </div>
+                    <p class="border-top">
+                        <ng-container *ngIf="fr.additionalInfo; else teacher">
+                            {{fr.additionalInfo}}
+                        </ng-container>
+                        <ng-template #teacher>
+                            {{fr.aboutMe}}
+                        </ng-template>
+                    </p>
+                    <div class="button-wrapper clearfix">
+                        <div class="col-50">
+                            <!-- frdReqStatus=0 if you send request, and 1 if request has been sent to you -->
+
+                            <ng-container *ngIf="fr.frdReqStatus && fr.roleId==4">
+                                <ng-container *ngIf="fr.frdReqStatus==0">
+                                    <button class="custom-btn full-width btn-widthicon active" type="submit">
+                                       
+                                        {{'request-sent' | translate}}
+                                    </button>
+                                </ng-container>
+                                <ng-container *ngIf="fr.frdReqStatus!=0">
+                                    <button class="custom-btn full-width btn-widthicon active" (click)="accepteFriend(fr._id,i)" type="submit">
+                                      
+                                        {{'accept-requst' | translate}}
+                                    </button>
+                                </ng-container>
+                            </ng-container>
+                            <ng-container *ngIf="!fr.frdReqStatus && fr.roleId==4">
+                                <button class="custom-btn full-width btn-widthicon active" (click)="sendFriendRequest(fr._id,i,1)" type="submit">
+                                   
+                                    {{'send-request' | translate}}
+                                </button>
+                            </ng-container>
+
+                            <ng-container *ngIf="!fr.frdReqStatus && fr.roleId==3 && !fr.follow">
+                                <button class="custom-btn full-width btn-widthicon active" (click)="followTeacher(fr._id,i,0)" type="submit">
+                                       
+                                        {{'follow-teacher' | translate}}
+                                    </button>
+                            </ng-container>
+
+                            <ng-container *ngIf="!fr.frdReqStatus && fr.roleId==3 && fr.follow && fr.follow==1">
+                                <button class="custom-btn full-width btn-widthicon active" type="submit">
+                                            
+                                             {{'followed-teacher' | translate}}
+                                        </button>
+                            </ng-container>
+                        </div>
+                        <div class="col-50">
+                            <button class="custom-btn full-width btn-widthicon" type="submit">
+                                {{'send-message' | translate}}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-12 col-md-12 col-lg-12 pd5" *ngIf="isMoreData">
+                <div class="userdetail-column clearfix">
+                    <div class="leftin">
+                        <h3 (click)="loadMoreData()">
+                           
+                            {{'load-more-data' | translate}}
+                        </h3>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- <div class="col-sm-12 col-md-12 col-lg-6 pd5">
+                
+                
+                
+                        <div class="userdetail-column clearfix">
+                    <figure class="image" style="background-image: url(assets/images/user1.jpg);"></figure>
+                    <div class="leftin">
+                        <h3>Sharon Doe</h3>
+                        <label class="label-withicon full-width">
+                          <span class="icon"><img alt="" src="assets/images/marker.png"></span>
+                          <strong> From:</strong> United States
+                      </label>
+                        <label class="label-withicon full-width">
+                          <span class="icon"><img alt="" src="assets/images/speaks-icon.png"></span>
+                              <strong> Speaks:</strong> English
+                      </label>
+                        <label class="label-withicon full-width">
+                          <span class="icon"><img alt="" src="assets/images/student-icon.png"></span>
+                              <strong> Student </strong>
+                      </label>
+                    </div>
+                    <p class="border-top"> Lorem, ipsum dolor sit amet consectetur adipisicing elit. Laudantium exercitationem delectus dicta facere in aut placeat excepturi fugit modi quo odio voluptate nostrum, facilis quam veritatis quos corporis et! Harum.
+                    </p>
+                    <div class="button-wrapper clearfix">
+                        <div class="col-50">
+                            <button class="custom-btn full-width btn-widthicon active" type="submit"><span><img alt="" src="assets/images/request-icon.png"> Send Request </span></button>
+                        </div>
+                        <div class="col-50">
+                            <button class="custom-btn full-width btn-widthicon" type="submit"><span> <img alt="" src="assets/images/message-icon.png">Send Message </span></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-12 col-md-12 col-lg-6 pd5">
+                <div class="userdetail-column clearfix">
+                    <figure class="image" style="background-image: url(assets/images/user1.jpg);"></figure>
+                    <div class="leftin">
+                        <h3>Sharon Doe</h3>
+                        <label class="label-withicon full-width">
+                          <span class="icon"><img alt="" src="assets/images/marker.png"></span>
+                          <strong> From:</strong> United States
+                      </label>
+                        <label class="label-withicon full-width">
+                          <span class="icon"><img alt="" src="assets/images/speaks-icon.png"></span>
+                          <strong> Speaks:</strong> English
+                      </label>
+                        <label class="label-withicon full-width">
+                          <span class="icon"><img alt="" src="assets/images/student-icon.png"></span>
+                          <strong> Student </strong>
+                      </label>
+                    </div>
+                    <p class="border-top"> Lorem, ipsum dolor sit amet consectetur adipisicing elit. Laudantium exercitationem delectus dicta facere in aut placeat excepturi fugit modi quo odio voluptate nostrum, facilis quam veritatis quos corporis et! Harum.
+                    </p>
+                    <div class="button-wrapper clearfix">
+                        <div class="col-50">
+                            <button class="custom-btn full-width btn-widthicon" type="submit"><span><img alt="" src="assets/images/request-icon.png"> Send Request </span></button>
+                        </div>
+                        <div class="col-50">
+                            <button class="custom-btn full-width btn-widthicon" type="submit"><span> <img alt="" src="assets/images/message-icon.png">Send Message </span></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-12 col-md-12 col-lg-6 pd5">
+                <div class="userdetail-column clearfix">
+                    <figure class="image" style="background-image: url(assets/images/user1.jpg);"></figure>
+                    <div class="leftin">
+                        <h3>Sharon Doe</h3>
+                        <label class="label-withicon full-width">
+                              <span class="icon"><img alt="" src="assets/images/marker.png"></span>
+                              <strong> From:</strong> United States
+                          </label>
+                        <label class="label-withicon full-width">
+                              <span class="icon"><img alt="" src="assets/images/speaks-icon.png"></span>
+                                  <strong> Speaks:</strong> English
+                          </label>
+                        <label class="label-withicon full-width">
+                              <span class="icon"><img alt="" src="assets/images/student-icon.png"></span>
+                                  <strong> Student </strong>
+                          </label>
+                    </div>
+                    <p class="border-top"> Lorem, ipsum dolor sit amet consectetur adipisicing elit. Laudantium exercitationem delectus dicta facere in aut placeat excepturi fugit modi quo odio voluptate nostrum, facilis quam veritatis quos corporis et! Harum.
+                    </p>
+                    <div class="button-wrapper clearfix">
+                        <div class="col-50">
+                            <button class="custom-btn full-width btn-widthicon" type="submit"><span><img alt="" src="assets/images/request-icon.png"> Send Request </span></button>
+                        </div>
+                        <div class="col-50">
+                            <button class="custom-btn full-width btn-widthicon" type="submit"><span> <img alt="" src="assets/images/message-icon.png">Send Message </span></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-12 col-md-12 col-lg-6 pd5">
+                <div class="userdetail-column clearfix">
+                    <figure class="image" style="background-image: url(assets/images/user1.jpg);"></figure>
+                    <div class="leftin">
+                        <h3>Sharon Doe</h3>
+                        <label class="label-withicon full-width">
+                                  <span class="icon"><img alt="" src="assets/images/marker.png"></span>
+                                  <strong> From:</strong> United States
+                              </label>
+                        <label class="label-withicon full-width">
+                                  <span class="icon"><img alt="" src="assets/images/speaks-icon.png"></span>
+                                      <strong> Speaks:</strong> English
+                              </label>
+                        <label class="label-withicon full-width">
+                                  <span class="icon"><img alt="" src="assets/images/student-icon.png"></span>
+                                      <strong> Student </strong>
+                              </label>
+                    </div>
+                    <p class="border-top"> Lorem, ipsum dolor sit amet consectetur adipisicing elit. Laudantium exercitationem delectus dicta facere in aut placeat excepturi fugit modi quo odio voluptate nostrum, facilis quam veritatis quos corporis et! Harum.
+                    </p>
+                    <div class="button-wrapper clearfix">
+                        <div class="col-50">
+                            <button class="custom-btn full-width btn-widthicon" type="submit"><span><img alt="" src="assets/images/request-icon.png"> Send Request </span></button>
+                        </div>
+                        <div class="col-50">
+                            <button class="custom-btn full-width btn-widthicon" type="submit"><span> <img alt="" src="assets/images/message-icon.png">Send Message </span></button>
+                        </div>
+                    </div>
+                </div>
+            </div> -->
+        </div>
+    </div>
+</div>

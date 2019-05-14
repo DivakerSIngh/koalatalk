@@ -1,0 +1,367 @@
+--getDiscussionExistingUser
+CREATE proc getDiscussionExistingUser --2  
+@discussionId int=0  
+as  
+begin  
+select us.id, us.FirstName + ' '+ us.LastName as fullName,us.userName, us.emailAddress, us.profilePictureFile,dis.iscreator from discussionMembers dis  
+inner join SystemUser us  
+on us.id=dis.memberId  
+where discussionid=@discussionId and isactive=1  
+end  
+
+
+
+--saveDiscussionPoints
+CREATE proc getDiscussionExistingUser --2  
+@discussionId int=0  
+as  
+begin  
+select us.id, us.FirstName + ' '+ us.LastName as fullName,us.userName, us.emailAddress, us.profilePictureFile,dis.iscreator from discussionMembers dis  
+inner join SystemUser us  
+on us.id=dis.memberId  
+where discussionid=@discussionId and isactive=1  
+end  
+
+--getThreadPointsBasedonThreadId
+CREATE proc getThreadPointsBasedonThreadId --5  
+@threadID int=0  
+as  
+begin  
+select threadpointsid,threadId,points,createdDate,profilePictureFile,firstName+' '+LastName as fullName from discussionThreadsPoints points  
+inner join   
+systemuser us on points.createdBy=us.id  
+where points.threadId=@threadID  
+and isActive=1  
+order by createdDate desc  
+end
+
+
+--getDiscussionThreadBasedOndiscussionID
+CREATE proc getDiscussionThreadBasedOndiscussionID --2  
+@discussionId int=0  
+as  
+begin  
+select threadId, threadName,discussionId from discussionThreads  
+where discussionId=@discussionId and isactive=1 order by createdDate desc  
+end
+
+--saveDiscussionThread
+CREATE proc saveDiscussionThread --'New Discussion11',10003,5  
+@threadName varchar(500)='',  
+@createdBy varchar(10)='0',  
+@discussionId varchar(10)='0'  
+as  
+begin  
+ --status 1 if success  
+ --status 2 if already exists  
+ --status 0 if error  
+ --status 10 if more than 10  
+ begin try  
+  if not exists(select threadName from discussionThreads where threadName=@threadName and discussionId=@discussionId)  
+   begin  
+   declare @count int  
+   select @count=count(threadName) from discussionThreads where discussionId=@discussionId  
+   if @count<10  
+   begin  
+    insert into discussionThreads  
+    (threadName,  
+    createdBy,  
+    createdDate,  
+    isActive,  
+    discussionId)  
+    values  
+    (@threadName,  
+    @createdBy,  
+    getdate(),  
+    1,  
+    @discussionId)  
+    select 1 as status  
+   end  
+   else  
+   begin  
+    select 10 as status  
+   end  
+  end   
+  else  
+  begin  
+   select 2 as status  
+  end  
+ end try   
+ begin catch  
+  select 0 as status  
+ end catch  
+end  
+  
+
+
+--getMemberDissucssionName
+CREATE proc getMemberDissucssionName --10901  
+@memberId int=0  
+as  
+begin  
+select   
+member.memberId,  
+disc.discussionId,  
+disc.discussionName,  
+member.iscreator,  
+proj.id as projectId,   
+proj.Name as projectName,  
+proj.coverImageFilePath as displayPicture   
+from discussionName disc  
+inner join discussionMembers member  
+on disc.discussionId=member.discussionId  
+inner join OrganizationProject proj on  
+disc.projectid=proj.id  
+where proj.status=1  
+and disc.isactive=1  
+and member.memberId=@memberId  
+end
+
+
+--SaveChatdisussionMember
+  
+CREATE proc [dbo].[SaveChatdisussionMember] --'1',1,1,1  
+@discussionId varchar='',        
+@memberId int=0,        
+@addedBy int=0,  
+@iscreator int=0  
+as        
+begin      
+  begin try  
+  insert into discussionMembers (discussionId,memberId,CreateDate,addedBy,iscreator)        
+  values(@discussionId,@memberId,GETDATE(),@addedBy,@iscreator)        
+  select 1 as status    
+  end try  
+ begin catch  
+    select  0 as status   
+    print 'Message'   
+ end catch       
+end 
+
+
+
+--SaveUpdateDiscussionPoint
+
+CREATE proc [dbo].[SaveUpdateDiscussionPoint]  --0,'This is test',1,1,1,   @status out  
+@pointsId int=0      
+,@points varchar(max)='',      
+@discussionId int=0,      
+@memberId int=0,      
+@isactive bit     
+,@Status bit out   
+as      
+begin     
+begin try     
+if exists(select * from DiscussionPoints where pointsId=@pointsId)      
+begin      
+update DiscussionPoints set @isactive=@isactive      
+where pointsId=@pointsId      
+set @Status=1    
+end      
+else      
+begin      
+insert into DiscussionPoints values (@points,@discussionId,@memberId,@isactive,getdate())      
+set @Status=1    
+end      
+end try    
+begin catch    
+set @Status=0    
+end catch    
+end  
+
+
+
+--saveDiscussionMember
+CREATE proc [dbo].[saveDiscussionMember]      
+ @discussionId int=0      
+,@isactive bit      
+,@memberId int=0      
+,@addedbyMember int    
+,@Status bit  out    
+as      
+begin     
+begin try     
+if exists(select DiscussionmemberID from Discussionmembers where DiscussionId=@discussionId      
+and memberId=@memberId)      
+begin      
+update Discussionmembers set      
+Isactive=@isactive, UpdatedBy=@addedbyMember, UpdatedDate=GETDATE()      
+where DiscussionId=@discussionId and memberId=@memberId     
+set @Status=1     
+end      
+else      
+begin      
+insert into Discussionmembers(DiscussionId,memberId,CreateDate,Isactive,AddedBy) values(@discussionId,@memberId,GETDATE(),1,@addedbyMember)      
+set @Status=1    
+end      
+end try    
+begin catch    
+set @Status=0    
+end catch    
+    
+end  
+
+
+--SaveChatdisussion
+CREATE proc [dbo].[SaveChatdisussion] --100,'disc',200    
+@Discussion_Name varchar(100)='',     
+@created_by int=0,          
+@projectId int=0,    
+@discussionId int=0,    
+@memberId int=0,    
+@addedBy int=0,    
+@isCreator bit=0,    
+@isPrimaryData bit=0    
+as          
+begin      
+    
+  begin try    
+  if  @isPrimaryData=1    
+  begin   
+     if not exists(select  DiscussionName from DiscussionName where DiscussionName=@Discussion_Name and projectId=@projectId)  
+  begin  
+   declare @lastgenrated int          
+   insert into DiscussionName (DiscussionName,Cretedby,CreateDate,projectId)          
+   values(@Discussion_Name,@created_by,GETDATE(),@projectId)          
+   set @lastgenrated=@@IDENTITY     
+   select @lastgenrated as lastGeneratedId , 1 as status  , 1 as Isprimary     
+  end  
+  else  
+  begin  
+    select 2 as status  , 0 as Isprimary    
+  end  
+  end    
+  else    
+  begin    
+    insert into discussionMembers (discussionId,memberId,CreateDate,addedBy,iscreator)          
+  values(@discussionId,@memberId,GETDATE(),@addedBy,@isCreator)          
+  select 1 as status,0 as Isprimary      
+  end    
+  end try    
+ begin catch    
+    select  0 as status,0 as Isprimary        
+ end catch     
+         
+end 
+
+
+--savechat
+create proc [dbo].[savechat]  
+@Member_id int =0,  
+@DiscussionId int=0,  
+@ChatText varchar(max)  
+as  
+begin  
+  
+ insert into DiscussionChat(Memberid,DiscussionId,ChatText,ChatDate) values  
+ (@Member_id,@DiscussionId,@ChatText,GETDATE())  
+end  
+
+--getMemberListWithChatDisussion
+CREATE proc [dbo].[getMemberListWithChatDisussion] --1,135     
+@discussionid int=0,  
+@DefaultOrganizationId int= 0      
+as      
+begin      
+select m.id as memberId,m.firstname, m.lastname,m.profilepictureFile as  Image,      
+Isadded=(select top 1 isnull(isactive,0) from Discussionmembers where memberId=m.id and DiscussionId=@discussionid)      
+ ,@discussionid as discussionid from SystemUser m   
+ where DefaultOrganizationId=@DefaultOrganizationId     
+ end 
+
+--getdiscussionNameBasedonSelection
+CREATE proc [dbo].[getdiscussionNameBasedonSelection] --1      
+@member_id int=0      
+as      
+begin      
+select rank() OVER (ORDER BY discussionid) as Row,  @member_id as member_id,* from DiscussionName where discussionid in(select discussionid from Discussionmembers      
+where memberid=@member_id and Isactive=1)      
+end 
+
+--GetDiscussionChat
+CREATE proc [dbo].[GetDiscussionChat] --1,10821        
+ @discussionId int=0      
+ ,@memberid int=0        
+ as        
+ begin        
+      
+ if exists(select id from deletechatdiscussion where discussionid=@discussionId and memberid=@memberid)      
+ begin      
+ declare @deleteddate datetime      
+ select top(1) @deleteddate=deletedate from deletechatdiscussion where discussionid=@discussionId and memberid=@memberid order by deletedate desc      
+ select chat.ChatID ,chat.Memberid,chat.DiscussionId,chat.ChatText,chat.ChatDate,mb.firstName,mb.lastname,mb.profilepicturefile as  image        
+ from DiscussionChat chat inner join SystemUser mb        
+ on chat.Memberid=mb.id        
+   where chat.DiscussionId=@discussionId       
+  -- and chat.Memberid =@memberid      
+   and chat.ChatDate>@deleteddate      
+ end      
+ else      
+ begin      
+ -- select chat.ChatID ,chat.Member_id,chat.DiscussionId,chat.ChatText,chat.ChatDate,mb.Member_Name,mb.image        
+ --from DiscussionChat chat inner join members mb        
+ --on chat.Member_id=mb.memberId        
+ --  where DiscussionId=@discussionId     
+  select chat.ChatID ,chat.Memberid,chat.DiscussionId,chat.ChatText,chat.ChatDate,mb.firstName,mb.lastname,mb.profilepicturefile as  image        
+ from DiscussionChat chat inner join SystemUser mb        
+ on chat.Memberid=mb.id        
+   where chat.DiscussionId=@discussionId       
+   --and chat.Memberid =@memberid      
+ end      
+     
+end 
+
+--GetDiscusionPoint
+
+create proc [dbo].[GetDiscusionPoint]  
+@discussionPoint int=0  
+as  
+begin  
+select * from DiscussionPoints where DiscussionId=@discussionPoint  
+end  
+
+--deleteChatDisccusion
+CREATE proc [dbo].[deleteChatDisccusion]   
+@discussionId int=0,  
+@memberId int=0,  
+@Status bit output  
+as  
+begin  
+begin try  
+insert into deletechatdiscussion values(@discussionId,@memberId,GETDATE())  
+set @Status=1  
+end try  
+begin catch  
+set @Status=0  
+end catch  
+  
+end  
+  
+
+--GetMemberList
+
+CREATE proc getMemberList --135     
+@defaultorganizationid int=0     
+as        
+begin      
+     
+--select m.id as memberId,m.firstname,m.lastname,m.profilePictureFile as Image,      
+-- lastmessge=(select top(1) chat.chattext from DiscussionChat chat where chat.Memberid=m.id       
+-- and chat.ChatDate>(select top(1) ISNULL(del.deletedate,'2000-05-23 15:17:44.257') from deletechatdiscussion del where      
+-- del.discussionid=chat.DiscussionId and del.memberid=chat.Memberid order by del.deletedate desc      
+-- ) order by chat.ChatDate desc)      
+--,discussionid=( select top(1) chat.DiscussionId from DiscussionChat chat where chat.Memberid=m.id       
+-- and chat.ChatDate>(select top(1) ISNULL(del.deletedate,'2000-05-23 15:17:44.257') from deletechatdiscussion del where      
+-- del.discussionid=chat.DiscussionId and del.memberid=chat.Memberid order by del.deletedate desc      
+-- ) order by chat.ChatDate desc)      
+      
+--,chatDate=(  select top(1) chat.ChatDate from DiscussionChat chat where chat.Memberid=m.id       
+-- and chat.ChatDate>(select top(1) ISNULL(del.deletedate,'2000-05-23 15:17:44.257') from deletechatdiscussion del where      
+-- del.discussionid=chat.DiscussionId and del.memberid=chat.Memberid order by del.deletedate desc      
+-- ) order by chat.ChatDate desc)     
+-- from systemuser m      
+-- where defaultorganizationid=@defaultorganizationid    
+  
+select ID as memberId,firstName +' '+ lastname as FullName,UserName, ProfilePictureFile as Image,EmailAddress  
+from systemuser where id in(select systemuserid from  OrganizationMember where organizationId=@defaultorganizationid and status=1)  
+end 

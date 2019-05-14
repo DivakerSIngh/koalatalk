@@ -1,0 +1,32 @@
+<!-- <app-instant-tutoring-mark></app-instant-tutoring-mark> -->
+<div class="datasecwrapper-inner">
+    <div class="btn-border">
+        <button type="" class="custom-btn gradient-lr" [routerLink]="['../create-courses']">
+            {{'create-course' | translate}}
+        </button>
+    </div>
+    <div class="course-column" *ngFor="let course of allCourses">
+        <div class="right-sec">
+            <span class="label-green">
+                ${{course.price}} {{course.noOfLesson}}
+                <br> {{'lessons' | translate}}
+            </span>
+        </div>
+        <div class="wrap-left">
+            <a href="javascript:void(0)" class="head" [routerLink]="['../course-details',course._id]">{{course.courseTitle}}</a>
+            <h4 class="upparcase">{{course.language}}, {{course.targetStudentLevel}}</h4>
+            <h4 class="italic">{{course.courseType}}</h4>
+            <p>{{course.courseDesciption}}</p>
+        </div>
+    </div>
+
+    <div class="course-column" *ngIf="allCourses.length<=0">
+        <div class="right-sec">
+        </div>
+        <div class="wrap-left">
+            <a href="javascript:void(0)" class="head">
+                {{'no-record-found' | translate}}
+            </a>
+        </div>
+    </div>
+</div>

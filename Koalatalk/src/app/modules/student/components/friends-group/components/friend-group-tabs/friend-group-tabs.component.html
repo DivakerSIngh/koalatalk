@@ -1,0 +1,17 @@
+<ul class="friend-group-tabs">
+    <li>
+        <a href="javascript:void(0);" [routerLink]="[ './friends']" routerLinkActive="active">{{'friends' | translate}}</a>
+    </li>
+    <li>
+        <a href="javascript:void(0);" [routerLink]="[ './groups']" routerLinkActive="active">{{'groups' | translate}}</a>
+    </li>
+    <li>
+        <a href="javascript:void(0);" [routerLink]="[ './requests']" routerLinkActive="active">{{'requests' | translate}}</a>
+    </li>
+    <li>
+        <a href="javascript:void(0);" [routerLink]="[ './owner-group']" routerLinkActive="active">{{'owner-group' | translate}}</a>
+    </li>
+</ul>
+<div class="datasecwrapper-inner">
+    <router-outlet></router-outlet>
+</div>

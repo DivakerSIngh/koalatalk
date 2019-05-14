@@ -1,0 +1,3 @@
+http://cleardriveproduct.cloudapp.net/v1/SendToEmailEntity/1/549  -- 1 will be static and 549 will be RFI id
+
+get

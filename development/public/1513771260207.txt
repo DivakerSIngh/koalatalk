@@ -1,0 +1,938 @@
+         --sp_helptext [Save_update_field_inspections]    
+    
+    
+          
+CREATE proc [dbo].[Save_update_field_inspections_line]                              
+         @Activity_list_number int                              
+        ,@Inspection_line_number int                              
+        ,@Report_sequence int                              
+        ,@Inspection_sequence_number int                              
+        ,@Date_created datetime                              
+        ,@Created_by varchar(12)                              
+        ,@Date_inspected datetime                              
+        ,@Inspected_by nvarchar(12)                              
+        ,@Inspected_indicator int                              
+        ,@Field_inspection_code nvarchar(50)                              
+        ,@Field_inspection_description nvarchar(50)                              
+        ,@Sample_indicator int                              
+        ,@Free_inspection_indicator int                              
+        ,@Female_indicator int                              
+        ,@Male_indicator int                              
+        ,@Field_indicator int                              
+        ,@Facility_indicator int                              
+        ,@Field_inspection_value nvarchar(100)                              
+        ,@Remark_indicator int                              
+        ,@Inspection_remarks nvarchar(500)=null                              
+        ,@Alarm_indicator int                              
+        ,@Field_number bigint                              
+        ,@Plant_raising_number int                              
+        ,@Mandatory_indicator bigint                              
+        ,@Result nvarchar(20)                              
+        ,@Result_percentage numeric                              
+        ,@Result_number int                              
+        ,@Result_quantity numeric                              
+        ,@Result_indicator int                              
+        ,@Result_string nvarchar(50)                              
+        ,@Result_date datetime                              
+        ,@Check_result_indicator int                              
+        ,@Check_percentage_indicator int                              
+        ,@Check_number_indicator int                              
+        ,@Check_quantity_indicator int                              
+        ,@Check_indicator_indicator int                              
+        ,@Check_date_indicator int                              
+        ,@Single_value_indicator int                              
+        ,@Multiple_value_indicator int                              
+        ,@Create_activity_indicator int                              
+        ,@Related_activity_number int                              
+        ,@Manual_trial_score numeric                              
+        ,@Status bit out                      
+        ,@Completed_indicator int                      
+        ,@Confirmed_indicator int          
+  ,@Date_confirmed   datetime ='2017-06-24 21:17:06.997'                       
+  as                              
+  begin                              
+  begin try                              
+  if exists(select Activity_list_number from  [ABS_PRODUCTION].[dbo].Field_inspection_lines                           
+  where Activity_list_number=@Activity_list_number                          
+   and Inspection_line_number=@Inspection_line_number                          
+  )                              
+  begin                     
+                   
+  if @Completed_indicator>0                    
+  begin                    
+  update [ABS_PRODUCTION].[dbo].Activity_list set Completed_indicator=1 ,Completed_by=@Created_by,Internal_executor=@Created_by,          
+  Date_entered= @Date_created,Entered_by=@Created_by                  
+  where Activity_list_number=@Activity_list_number                     
+  end                    
+                    
+                       
+  if @Confirmed_indicator>0                    
+  begin                    
+  update [ABS_PRODUCTION].[dbo].Activity_list set Confirmed_indicator=@Confirmed_indicator,           
+  Date_confirmed= @Date_confirmed ,Confirmed_by=@Created_by ,Internal_executor=@Created_by ,          
+  Date_entered= @Date_created,Entered_by=@Created_by                
+  where Activity_list_number=@Activity_list_number                     
+                     
+  end                
+  if @Field_inspection_code='CROP REPORT' or  @Field_inspection_code='CROP VIGOUR'            
+  begin            
+  update [ABS_PRODUCTION].[dbo].Field_inspection_lines set                     
+  Date_inspected=@Date_inspected                    
+  --,Result=@Result               
+ --,Result_date=@Result_date        
+ ,Result_number=@Result_number,            
+ Inspection_remarks=@Inspection_remarks                     
+   where                              
+   Activity_list_number=@Activity_list_number and                              
+   Inspection_line_number=@Inspection_line_number                              
+              
+  end            
+  else            
+  begin            
+  update [ABS_PRODUCTION].[dbo].Field_inspection_lines set                     
+  Date_inspected=@Date_inspected,        
+  Result_number=@Field_inspection_value                    
+  --,Result=@Result                       
+ --,Result_date=@Result_date      
+ ,[Field_inspection_value]=@Field_inspection_value                  
+   where                              
+   Activity_list_number=@Activity_list_number and                              
+   Inspection_line_number=@Inspection_line_number                              
+              
+  end                        
+   set @status=1                              
+  end                              
+  else                              
+  begin          
+          
+  if @Field_inspection_code='CROP REPORT' or @Field_inspection_code='CROP VIGOUR'          
+                 begin        
+  insert into [ABS_PRODUCTION].[dbo].Field_inspection_lines                             
+  (        Activity_list_number                              
+          ,Inspection_line_number                              
+          ,Report_sequence                              
+         ,Inspection_sequence_number                              
+        ,Date_created                              
+        ,Created_by                              
+        ,Date_inspected                              
+        ,Inspected_by                              
+        ,Inspected_indicator                               
+        ,Field_inspection_code                     
+        ,Field_inspection_description                              
+        ,Sample_indicator                              
+        ,Free_inspection_indicator                              
+        ,Female_indicator                   
+        ,Male_indicator                              
+        ,Field_indicator                              
+        ,Facility_indicator                              
+        ,Field_inspection_value                              
+        ,Remark_indicator                              
+        ,Inspection_remarks                              
+        ,Alarm_indicator                              
+        ,Field_number                              
+        ,Plant_raising_number                              
+        ,Mandatory_indicator                              
+        ,Result                              
+        ,Result_percentage                              
+        ,Result_number                              
+        ,Result_quantity                              
+        ,Result_indicator                              
+        ,Result_string                              
+        ,Result_date                              
+        ,Check_result_indicator                              
+        ,Check_percentage_indicator                              
+        ,Check_number_indicator                              
+        ,Check_quantity_indicator              
+        ,Check_indicator_indicator                              
+        ,Check_date_indicator                              
+        ,Single_value_indicator                              
+        ,Multiple_value_indicator                              
+        ,Create_activity_indicator                      
+        ,Related_activity_number                              
+        ,Manual_trial_score                              
+  )                              
+  values                              
+  (                              
+         @Activity_list_number                
+         ,@Inspection_line_number,                              
+         @Report_sequence                              
+        ,@Inspection_sequence_number                              
+        ,@Date_created                              
+        ,@Created_by                              
+        ,@Date_inspected                               
+        ,@Inspected_by                              
+        ,@Inspected_indicator                               
+        ,@Field_inspection_code                              
+        ,@Field_inspection_description                              
+        ,@Sample_indicator                              
+        ,@Free_inspection_indicator                              
+        ,@Female_indicator                              
+        ,@Male_indicator                              
+        ,@Field_indicator                              
+        ,@Facility_indicator                              
+        ,@Field_inspection_value                              
+        ,@Remark_indicator                              
+        ,@Inspection_remarks                              
+        ,@Alarm_indicator                              
+        ,@Field_number                              
+        ,@Plant_raising_number                              
+        ,@Mandatory_indicator                              
+        ,@Result                              
+        ,@Result_percentage            
+        ,@Result_number                           
+        --,@Field_inspection_value--@Result_number                              
+        ,@Result_quantity                              
+        ,@Result_indicator                              
+        ,@Result_string                              
+        ,null --@Result_date                              
+        ,@Check_result_indicator                              
+        ,@Check_percentage_indicator                              
+        ,@Check_number_indicator                              
+        ,@Check_quantity_indicator                              
+        ,@Check_indicator_indicator                              
+        ,@Check_date_indicator                              
+        ,@Single_value_indicator                               
+        ,@Multiple_value_indicator                               
+        ,@Create_activity_indicator                               
+        ,@Related_activity_number                               
+        ,@Manual_trial_score                              
+  )              
+  end        
+  else        
+  begin        
+    
+if exists(select Activity_list_number from [ABS_PRODUCTION].[dbo].Activity_list where Activity_list_number=@Activity_list_number)    
+begin    
+ if @Confirmed_indicator>0                    
+  begin                    
+  update [ABS_PRODUCTION].[dbo].Activity_list set Confirmed_indicator=@Confirmed_indicator,           
+  Date_confirmed= @Date_confirmed ,Confirmed_by=@Created_by ,Internal_executor=@Created_by ,          
+  Date_entered= @Date_created,Entered_by=@Created_by                
+  where Activity_list_number=@Activity_list_number                     
+                     
+  end                
+ -- if @Field_inspection_code='CROP REPORT' or  @Field_inspection_code='CROP VIGOUR'            
+ -- begin            
+ -- update [ABS_PRODUCTION].[dbo].Field_inspection_lines set                     
+ -- Date_inspected=@Date_inspected                    
+ -- --,Result=@Result               
+ ----,Result_date=@Result_date  
+ --,Result_number=@Result_number,            
+ --Inspection_remarks=@Inspection_remarks                     
+ --  where                              
+ --  Activity_list_number=@Activity_list_number and                              
+ --  Inspection_line_number=@Inspection_line_number                              
+              
+ -- end      
+   
+                      
+  if @Confirmed_indicator>0                    
+  begin                    
+  update [ABS_PRODUCTION].[dbo].Activity_list set Confirmed_indicator=@Confirmed_indicator,           
+  Date_confirmed= @Date_confirmed ,Confirmed_by=@Created_by ,Internal_executor=@Created_by ,          
+  Date_entered= @Date_created,Entered_by=@Created_by                
+  where Activity_list_number=@Activity_list_number                     
+                     
+  end    
+end    
+   insert into [ABS_PRODUCTION].[dbo].Field_inspection_lines                             
+  (        Activity_list_number                              
+          ,Inspection_line_number                              
+          ,Report_sequence                              
+         ,Inspection_sequence_number                              
+        ,Date_created                              
+        ,Created_by                              
+        ,Date_inspected                              
+        ,Inspected_by                              
+        ,Inspected_indicator                               
+        ,Field_inspection_code                     
+        ,Field_inspection_description                              
+        ,Sample_indicator                              
+        ,Free_inspection_indicator                              
+        ,Female_indicator                   
+        ,Male_indicator                              
+        ,Field_indicator                              
+        ,Facility_indicator                              
+        ,Field_inspection_value                              
+        ,Remark_indicator                              
+        ,Inspection_remarks                              
+        ,Alarm_indicator                              
+        ,Field_number                              
+        ,Plant_raising_number                              
+        ,Mandatory_indicator                              
+        ,Result                              
+        ,Result_percentage                              
+        ,Result_number                              
+        ,Result_quantity                              
+        ,Result_indicator                              
+        ,Result_string                              
+        ,Result_date             
+        ,Check_result_indicator                              
+        ,Check_percentage_indicator                              
+        ,Check_number_indicator                              
+        ,Check_quantity_indicator                              
+        ,Check_indicator_indicator                              
+        ,Check_date_indicator                              
+        ,Single_value_indicator                              
+        ,Multiple_value_indicator                              
+        ,Create_activity_indicator                              
+        ,Related_activity_number                              
+        ,Manual_trial_score                              
+  )                              
+  values                              
+  (                              
+         @Activity_list_number                              
+         ,@Inspection_line_number,                              
+         @Report_sequence                              
+        ,@Inspection_sequence_number                              
+        ,@Date_created                              
+        ,@Created_by                              
+        ,@Date_inspected                               
+        ,@Inspected_by                              
+        ,@Inspected_indicator                               
+        ,@Field_inspection_code                              
+        ,@Field_inspection_description                              
+        ,@Sample_indicator                              
+        ,@Free_inspection_indicator                              
+        ,@Female_indicator                              
+        ,@Male_indicator                              
+        ,@Field_indicator                              
+        ,@Facility_indicator                              
+        ,@Field_inspection_value                              
+        ,@Remark_indicator                              
+        ,@Inspection_remarks                              
+        ,@Alarm_indicator                              
+        ,@Field_number                              
+        ,@Plant_raising_number                              
+        ,@Mandatory_indicator                              
+        ,@Result                              
+        ,@Result_percentage                
+        ,@Field_inspection_value--@Result_number                              
+        ,@Result_quantity                              
+        ,@Result_indicator                              
+        ,@Result_string                              
+        ,null --@Result_date                              
+        ,@Check_result_indicator                              
+        ,@Check_percentage_indicator                              
+        ,@Check_number_indicator                              
+        ,@Check_quantity_indicator                              
+        ,@Check_indicator_indicator                              
+        ,@Check_date_indicator                              
+        ,@Single_value_indicator                               
+        ,@Multiple_value_indicator                               
+        ,@Create_activity_indicator                               
+        ,@Related_activity_number                               
+        ,@Manual_trial_score                              
+  )              
+  end                        
+  set @Status=1                              
+  end                              
+  end try                              
+  begin catch                              
+  set @Status=0                              
+  end catch                              
+  end        
+
+
+go
+
+
+
+
+          
+alter proc [dbo].[Save_update_field_inspections]                                                 
+  @Inspection_number int,                                                  
+  @Field_number bigint                                                  
+    ,@Growth_stage_code varchar(12),                                                  
+ @Inspection_date_planned datetime                                                  
+    ,@Date_created datetime,                                                  
+ @Created_by varchar(12)                                                  
+    ,@Activity_list_id  int,                                                  
+ @Inspection_protocol_number int                                                  
+    ,@Date_inspected datetime,                                                  
+ @Inspected_by varchar(12)                                                   
+    ,@Inspected_indicator int ,                                                  
+ @Facility_number int                                                  
+ ,@Field_book_number int                                                  
+    ,@Surface_field numeric--(13,3),                                                  
+ ,@Quantity_female  numeric--(13,3)                                                  
+    ,@Surface_female numeric--(13,3),                                                  
+, @Yield_per_plant_female numeric--(13,3)                                                  
+    ,@Yield_per_surface_female numeric--(13,3),                                                  
+ ,@Number_of_plants_female numeric--(13,3)                                                  
+    ,@Density_female numeric--(14,2)                                                  
+ ,@Quantity_male numeric--(13,3)                                                 
+    ,@Surface_male numeric--(13,3),                                                  
+ ,@Yield_per_plant_male numeric--(13,3)                                                  
+    ,@Yield_per_surface_male numeric--(13,3),                                                  
+ ,@Number_of_plants_male numeric--(13,3)                                                  
+    ,@Density_male numeric--(14,2),                                                  
+ ,@Germination_risk int                                                  
+    ,@Sanitary_risk int,                                                  
+ @Genetic_purity_risk int                                                  
+    ,@Physical_purity_risk int                                                  
+ ,@Product_quantity numeric--(13,3)                                                  
+    ,@Product_quantity_weight numeric--(13,3),                                                  
+ ,@Surface_field_report_units numeric--(13,3)                                                  
+    ,@Start_status_indicator int,                                                  
+ @Crop_year_perennial int                                                  
+    ,@Percentage_expected numeric--(5,2),                                                  
+ ,@Percentage_expected_male numeric--(5,2)                                                  
+    ,@No_genetic_purity_risc int,                                                  
+ @No_germination_risc int                                                  
+    ,@No_Sanitary_risc int,                                                  
+ @No_physical_purity_risc int                                                  
+    ,@Fruits_per_plant_female int,                                                  
+ @Seeds_per_fruit_female int                                                  
+    ,@Fruits_per_plant_male int,                                                  
+ @Seeds_per_fruit_male int                                                  
+    ,@Placed_indicator int,                                                  
+ @Update_last_estimate_value int                              
+    ,@Product_quantity_pieces numeric--(13,3) ,                             
+ ,@Start_text nvarchar(50)                                                  
+  ,@Last_updated_indicator int                    
+  ,@Completed_indicator int=0,                                    
+  @Confirmed_indicator int=0,                
+  @Date_confirmed datetime ='2017-06-24 21:32:05.427'                                                  
+ ,@Status bit out                                            
+ ,@Responsefield_number bigint out                      
+ ,@Responseactivity_list_id int out                                            
+ ,@Responseinspection_protocol_number int out                                            
+ ,@Responseplanneddate datetime out                                           
+ ,@ResponseInspection_number int out                                          
+as                                                  
+begin                                               
+ declare @last_inspection_number int                                           
+ declare @last_Added_id int                  
+ declare @Surface_field_previous numeric                
+ declare @Product_quantity_weight_previous numeric                 
+                   
+  if exists(select * from  [ABS_PRODUCTION].[dbo].[Activity_list] where Field_number=@Field_number                                            
+   and Inspection_protocol_number=@Inspection_protocol_number and Date_planned=@Inspection_date_planned)                                            
+begin                                               
+                                    
+                                 
+  --if @Completed_indicator>0                                    
+  --begin                                    
+  --update [ABS_PRODUCTION].[dbo].Activity_list set  Completed_indicator=1               
+  ----,Date_confirmed = @Date_confirmed                
+  --where Activity_list_number=@Activity_list_id                                     
+  --end                                    
+                                    
+                                       
+  --if @Confirmed_indicator>0                                    
+  --begin                                    
+  --update [ABS_PRODUCTION].[dbo].Activity_list set Confirmed_indicator=@Confirmed_indicator                
+  ----Date_confirmed = @Date_confirmed                
+  --where Activity_list_number=@Activity_list_id                                     
+                                     
+  --end                     
+              
+                          
+                                    
+if exists(select Inspection_number from [ABS_PRODUCTION].[dbo].Field_inspections where                       
+Field_number=@Field_number                                            
+   and Inspection_protocol_number=@Inspection_protocol_number and                       
+   SUBSTRING(CONVERT(varchar,Date_created,101), 0, 10)                      
+   = SUBSTRING(CONVERT(varchar,@Date_created,101), 0, 10) and Activity_list_id=@Activity_list_id)                                           
+begin                                        
+update [ABS_PRODUCTION].[dbo].Field_inspections set                                   
+ Date_inspected=@Date_inspected                                                 
+,Quantity_female=@Quantity_female                                                  
+,Yield_per_surface_female=@Yield_per_surface_female                                
+,Quantity_male=@Quantity_male                                                  
+,Yield_per_surface_male=@Yield_per_surface_male                                                
+,Product_quantity=@Quantity_female + @Quantity_male                                                   
+,Percentage_expected=@Percentage_expected  --,Last_updated_indicator = 0  -- Added 0 for update                 
+  --where Inspection_number=@Inspection_number                      
+  where Field_number=@Field_number                             
+   and Inspection_protocol_number=@Inspection_protocol_number  and                      
+    SUBSTRING(CONVERT(varchar,Date_created,101), 0, 10)                      
+   = SUBSTRING(CONVERT(varchar,@Date_created,101), 0, 10)             
+   and Activity_list_id=@Activity_list_id                                            
+  set @Status=1                           
+                    
+                  
+  declare @activity int, @inspecnumber int                  
+  select @activity=Activity_list_id ,@inspecnumber=Inspection_number from  [ABS_PRODUCTION].[dbo].Field_inspections where                   
+  Field_number=@Field_number                                            
+  and Inspection_protocol_number=@Inspection_protocol_number  and                      
+    SUBSTRING(CONVERT(varchar,Date_created,101), 0, 10)                      
+   = SUBSTRING(CONVERT(varchar,@Date_created,101), 0, 10)                     
+       and Activity_list_id=@Activity_list_id            
+  set @Responsefield_number=@Field_number                                            
+  --set @Responseactivity_list_id=@Activity_list_id                    
+   set @Responseactivity_list_id=@activity                                           
+  set @Responseinspection_protocol_number=@Inspection_protocol_number                                            
+  set @Responseplanneddate=@Inspection_date_planned                                           
+  --set @ResponseInspection_number=@Inspection_number                       
+    set @ResponseInspection_number=@inspecnumber                   
+                  
+                                       
+end                                        
+else                                        
+begin                                        
+                 
+    select top(1) @last_inspection_number=Inspection_number from [ABS_PRODUCTION].[dbo].Field_inspections  order by Inspection_number desc            
+    set @last_inspection_number=@last_inspection_number+1;                       
+                       
+ select top(1)-- @last_inspection_number=Inspection_number,    
+ @Density_female=Density_female,                 
+    @Surface_field_previous = Surface_field,                
+   @Product_quantity_weight_previous = Product_quantity_weight,          
+   @Surface_female=Surface_female, @Number_of_plants_female=Number_of_plants_female,          
+ @Density_female=Density_female,          
+  @Surface_male=Surface_male,          
+   @Number_of_plants_male=Number_of_plants_male,          
+    @Density_male=Density_male,          
+   @Product_quantity_weight=Product_quantity_weight,          
+    @Surface_field_report_units=Surface_field_report_units,    
+ @Percentage_expected_male=Percentage_expected_male,    
+ @Product_quantity_pieces=Product_quantity_pieces,  
+ @Update_last_estimate_value=Update_last_estimate_value          
+  from [ABS_PRODUCTION].[dbo].Field_inspections where Field_number=@Field_number order by Inspection_number desc                                   
+  set @last_inspection_number=@last_inspection_number+1;                                         
+                           
+ if @Activity_list_id=0            
+ begin                              
+ select  @last_Added_id=[Activity_list_number] from [ABS_PRODUCTION].[dbo].[Activity_list]                                          
+ where Field_number=@Field_number                                            
+ and Inspection_protocol_number=@Inspection_protocol_number and Date_planned=@Inspection_date_planned              
+ end             
+ else            
+ begin            
+ set @last_Added_id=@Activity_list_id            
+ end                    
+         
+  
+ update [ABS_PRODUCTION].[dbo].Field_inspections set Last_updated_indicator=0 , Update_last_estimate_value=0 
+    where Field_number=@Field_number                                  
+  insert into [ABS_PRODUCTION].[dbo].Field_inspections                                                  
+    (                                                  
+     Inspection_number                                                  
+    ,Field_number                                                  
+    ,Growth_stage_code                                                  
+    ,Inspection_date_planned                                                  
+    ,Date_created                                                   
+    ,Created_by                                 
+    ,Activity_list_id                                                  
+    ,Inspection_protocol_number                                                  
+    ,Date_inspected                                                  
+    ,Inspected_by                                                  
+    ,Inspected_indicator                                                  
+    ,Facility_number                                   
+    ,Field_book_number                                                  
+    ,Surface_field                                                  
+    ,Quantity_female                                                  
+    ,Surface_female                                                  
+    ,Yield_per_plant_female                         
+    ,Yield_per_surface_female                                                  
+    ,Number_of_plants_female                                                  
+    ,Density_female                                                  
+    ,Quantity_male                                                  
+    ,Surface_male                                                  
+    ,Yield_per_plant_male                                                  
+    ,Yield_per_surface_male                                       
+    ,Number_of_plants_male                                           
+    ,Density_male                                                  
+    ,Germination_risk                                                  
+    ,Sanitary_risk                                                  
+    ,Genetic_purity_risk                                                  
+    ,Physical_purity_risk                                                  
+    ,Product_quantity                                                  
+    ,Product_quantity_weight                                                 
+    ,Surface_field_report_units                                                  
+    ,Start_status_indicator                                                  
+    ,Crop_year_perennial                                                  
+    ,Percentage_expected                                                  
+    ,Percentage_expected_male                                          
+    ,No_genetic_purity_risc                                                  
+    ,No_germination_risc                                                  
+    ,No_Sanitary_risc                                                  
+    ,No_physical_purity_risc               
+    ,Fruits_per_plant_female                                                  
+    ,Seeds_per_fruit_female                                                  
+    ,Fruits_per_plant_male                                                  
+    ,Seeds_per_fruit_male                                                  
+    ,Placed_indicator                                                  
+    ,Update_last_estimate_value                                                  
+    ,Product_quantity_pieces                                                  
+    ,Start_text                                                  
+    ,Last_updated_indicator                                
+ )                                                  
+ values                                                  
+ (                                                  
+     @last_inspection_number                                                  
+    ,@Field_number                                                  
+    ,'' -- '' for Growth_stage_code                                                 
+    ,@Inspection_date_planned                                                  
+    ,@Date_created                                          
+    ,@Created_by                                                  
+    ,@last_Added_id                                                  
+    ,@Inspection_protocol_number                                                  
+    ,@Date_inspected                                                  
+    ,@Inspected_by                                                  
+    ,1 -- for Inspected_indicator              
+    ,@Facility_number                                                  
+    ,@Field_book_number                                                  
+    ,@Surface_field_previous                                                  
+    ,@Quantity_female                                                  
+    ,@Surface_female                                                  
+    ,@Yield_per_plant_female                                                  
+    ,@Yield_per_surface_female                                                  
+    ,@Number_of_plants_female                                                  
+    ,@Density_female                                                  
+    ,@Quantity_male                                                  
+    ,@Surface_male                                                  
+    ,@Yield_per_plant_male                                                  
+    ,@Yield_per_surface_male                                                  
+    ,@Number_of_plants_male                                                  
+    ,@Density_male                                                  
+    ,@Germination_risk                                                  
+    ,@Sanitary_risk                                                  
+    ,@Genetic_purity_risk                                                  
+    ,@Physical_purity_risk                                                  
+    ,@Quantity_female + @Quantity_male                
+    ,@Product_quantity_weight_previous                                               
+    ,@Surface_female                                                  
+    ,@Start_status_indicator                                                  
+    ,@Crop_year_perennial                                                  
+    ,@Percentage_expected                                                  
+    ,@Percentage_expected_male                                                  
+    ,@No_genetic_purity_risc                                                  
+    ,@No_germination_risc                                                  
+    ,@No_Sanitary_risc                                                
+    ,@No_physical_purity_risc                                                  
+    ,@Fruits_per_plant_female                                                  
+    ,@Seeds_per_fruit_female                                                  
+    ,@Fruits_per_plant_male                                                  
+    ,@Seeds_per_fruit_male                                                  
+    ,@Placed_indicator                                                  
+    ,1--@Update_last_estimate_value                                                  
+    ,@Product_quantity_pieces                                                  
+    ,null --@Start_text                                                  
+    ,1 -- for Last_updated_indicator                
+ )                                                  
+  set @Status=1                                             
+  set @Responsefield_number=@Field_number                                            
+  set @Responseactivity_list_id=@last_Added_id                                            
+  set @Responseinspection_protocol_number=@Inspection_protocol_number                                            
+  set @Responseplanneddate=@Inspection_date_planned                                           
+  set @Responseinspection_number=@last_inspection_number                                         
+                                        
+end                  
+end                                                  
+else                                                  
+                                                  
+begin                                             
+                                     
+select top(1) @last_Added_id=[Activity_list_number] from [ABS_PRODUCTION].[dbo].[Activity_list]                                            
+order by [Activity_list_number] desc      
+                                            
+set @last_Added_id=@last_Added_id+1;                
+insert into [ABS_PRODUCTION].[dbo].Activity_list(                                         
+       Activity_list_number                                            
+      ,[Parent_activity_list_number]                                            
+      ,[Parent_inspection_line_number]                    
+      ,[Company_code]                                            
+      ,[Date_planned]                                            
+      ,[Year_planned]                                            
+      ,[Month_planned]                                            
+      ,[Week_planned]                                            
+      ,[Growth_stage_code]                                            
+      ,[Activity_code]                                           
+      ,[Activity_remarks]                                  
+      ,[Sequence_number]                                            
+      ,[Color_number]                                            
+      ,[Plant_raising_number]                                            
+      ,[Field_number]                                            
+      ,[Completed_indicator]                                            
+      ,[Date_completed]                                            
+      ,[Completed_by]                                            
+      ,[Year_completed]                                            
+      ,[Month_completed]                                            
+      ,[Week_completed]                                            
+      ,[Female_indicator]                                            
+      ,[Male_indicator]                                            
+      ,[Inspection_indicator]                                            
+      ,[Confirmed_indicator]                                         
+      ,[Date_confirmed]                                            
+      ,[Confirmed_by]                                            
+      ,[Field_book_number]                                            
+      ,[Inspection_protocol_number]                                            
+      ,[Date_created]                                            
+      ,[Created_by]                                            
+      ,[Harvest_indicator]                                            
+      ,[Sowing_indicator]                                            
+      ,[Grafting_indicator]                                            
+      ,[Planting_indicator]                                            
+      ,[Crop_code]                                     
+      ,[Allocation_indicator]                                            
+      ,[Material_number]                                            
+      ,[Material_abbreviated]                                          
+      ,[Material_indicator]                                            
+      ,[Fertilizer_indicator]                                            
+      ,[Treatment_indicator]                                            
+      ,[Crop_year_perennial]                                            
+      ,[Receiving_indicator]                                            
+      ,[Quality_indicator]                                            
+      ,[Internal_execution_indicator]                                            
+      ,[Internal_executor]                                            
+      ,[External_execution_indicator]                                            
+      ,[External_executor_number]         
+      ,[External_executor_abbreviated]                      
+      ,[Finance_indicator]                                            
+      ,[Message_indicator]                                            
+      ,[External_activity_indicator]                                            
+      ,[Harvest_pollen_indicator]                                            
+      ,[Activity_value]                                            
+      ,[Plants_removed_for_disease]                                       
+      ,[Receiving_number]                                            
+      ,[Lot_number]                                            
+     ,[Last_receiving_indicator]                                            
+      ,[Job_number]                                            
+      ,[Reciproke_indicator]                                            
+      ,[Receiving_sample_indicator]                                            
+      ,[Date_entered]                     
+      ,[Entered_by]                                            
+      ,[Facility_number]                                            
+      ,[Family_code]                                            
+      ,[Make_to_stock_date]                                            
+      ,[Trial_number]                                            
+      ,[Receiving_stockseed_indicator])                                            
+       select top(1)                               
+       @last_Added_id,                                            
+       [Parent_activity_list_number]                                            
+      ,[Parent_inspection_line_number]                                            
+      ,[Company_code]                                            
+      ,@Inspection_date_planned                                  
+      ,DATEPART(year,@Inspection_date_planned)                                             
+     ,DATEPART(month,@Inspection_date_planned)                                            
+      ,[Week_planned]                                            
+      ,[Growth_stage_code]                                            
+      , 100--[Activity_code]                                            
+      ,[Activity_remarks]                                            
+      ,[Sequence_number]                                            
+      ,[Color_number]                                            
+      ,[Plant_raising_number]                                            
+      ,[Field_number]                                            
+      ,0--[Completed_indicator]                                            
+      ,[Date_completed]                      
+      ,@Created_by  --[Completed_by]                                           
+      ,[Year_completed]                                            
+      ,[Month_completed]                                          
+      ,[Week_completed]                                            
+      ,[Female_indicator]                                            
+      ,[Male_indicator]                                            
+      ,[Inspection_indicator]                                            
+      ,1--[Confirmed_indicator]                                            
+      ,@Date_confirmed --,[Date_confirmed]                
+      ,@Created_by  --[Confirmed_by]                                            
+      ,[Field_book_number]                                            
+      ,[Inspection_protocol_number]                                            
+      ,@Date_created                                            
+      ,@Created_by                                            
+      ,[Harvest_indicator]                                            
+      ,[Sowing_indicator]                                            
+      ,[Grafting_indicator]                                            
+      ,[Planting_indicator]                                         
+      ,[Crop_code]                                            
+      ,[Allocation_indicator]                      
+      ,[Material_number]                                            
+      ,[Material_abbreviated]                                            
+      ,[Material_indicator]                                            
+      ,[Fertilizer_indicator]                                            
+      ,[Treatment_indicator]                                            
+      ,[Crop_year_perennial]                                            
+      ,[Receiving_indicator]                         
+      ,[Quality_indicator]                                            
+      ,[Internal_execution_indicator]                                            
+      ,[Internal_executor]                                         
+      ,[External_execution_indicator]                                            
+      ,[External_executor_number]                                            
+      ,[External_executor_abbreviated]                                            
+      ,[Finance_indicator]                                            
+      ,[Message_indicator]                                            
+      ,[External_activity_indicator]                                            
+      ,[Harvest_pollen_indicator]                                            
+      ,[Activity_value]                                            
+      ,[Plants_removed_for_disease]                                            
+      ,[Receiving_number]                                            
+      ,[Lot_number]                                            
+      ,[Last_receiving_indicator]                                            
+      ,[Job_number]                                            
+      ,[Reciproke_indicator]                  
+      ,[Receiving_sample_indicator]                                            
+      ,[Date_entered]                                            
+      ,[Entered_by]                                            
+      ,[Facility_number]                                            
+      ,[Family_code]                                            
+      ,[Make_to_stock_date]             
+      ,[Trial_number]                                            
+      ,[Receiving_stockseed_indicator] from [ABS_PRODUCTION].[dbo].[Activity_list]                                            
+      where Inspection_protocol_number=@Inspection_protocol_number                                            
+      and Field_number=@Field_number                                            
+      order by  [Activity_list_number] desc                                             
+                                            
+ if exists(select Inspection_number from [ABS_PRODUCTION].[dbo].Field_inspections)                                          
+ begin          
+    
+ select top(1) @last_inspection_number=Inspection_number from [ABS_PRODUCTION].[dbo].Field_inspections  order by Inspection_number desc            
+ set @last_inspection_number=@last_inspection_number+1;                       
+ select top(1)-- @last_inspection_number=Inspection_number,    
+ @Density_female=Density_female,                 
+    @Surface_field_previous = Surface_field,                
+   @Product_quantity_weight_previous = Product_quantity_weight,          
+   @Surface_female=Surface_female, @Number_of_plants_female=Number_of_plants_female,          
+ @Density_female=Density_female,          
+  @Surface_male=Surface_male,          
+   @Number_of_plants_male=Number_of_plants_male,          
+    @Density_male=Density_male,          
+   @Product_quantity_weight=Product_quantity_weight,          
+    @Surface_field_report_units=Surface_field_report_units,    
+ @Percentage_expected_male=Percentage_expected_male,    
+ @Product_quantity_pieces=Product_quantity_pieces,  
+  @Update_last_estimate_value=Update_last_estimate_value          
+  from [ABS_PRODUCTION].[dbo].Field_inspections where Field_number=@Field_number order by Inspection_number desc                                          
+                                          
+ end                                          
+ else                                          
+ begin                                          
+ set @last_inspection_number=1;                                          
+ end        
+     
+  update [ABS_PRODUCTION].[dbo].Field_inspections set Last_updated_indicator=0 ,Update_last_estimate_value=0     
+    where Field_number=@Field_number                                     
+insert into [ABS_PRODUCTION].[dbo].Field_inspections                                                  
+    (                                                  
+     Inspection_number                                                  
+    ,Field_number                                                  
+    ,Growth_stage_code                                                  
+    ,Inspection_date_planned                                                  
+    ,Date_created                                                   
+    ,Created_by                           
+    ,Activity_list_id                                                  
+    ,Inspection_protocol_number                                                  
+    ,Date_inspected                                                  
+    ,Inspected_by                                                  
+    ,Inspected_indicator                                                  
+    ,Facility_number                                                  
+    ,Field_book_number                                                  
+    ,Surface_field                                                  
+    ,Quantity_female                                                  
+    ,Surface_female                                                  
+    ,Yield_per_plant_female                                                  
+    ,Yield_per_surface_female                                                  
+    ,Number_of_plants_female                                                  
+    ,Density_female                                             
+    ,Quantity_male                                                  
+    ,Surface_male                                                  
+    ,Yield_per_plant_male                              
+    ,Yield_per_surface_male                                                  
+    ,Number_of_plants_male                                                  
+    ,Density_male                                                  
+    ,Germination_risk                                                  
+    ,Sanitary_risk                                                  
+    ,Genetic_purity_risk                                                  
+    ,Physical_purity_risk                                                  
+    ,Product_quantity                                                  
+    ,Product_quantity_weight                                                  
+    ,Surface_field_report_units                                                  
+    ,Start_status_indicator                                                  
+    ,Crop_year_perennial                                                  
+    ,Percentage_expected                                                  
+    ,Percentage_expected_male                                                  
+    ,No_genetic_purity_risc                                                  
+    ,No_germination_risc                  
+    ,No_Sanitary_risc                                                  
+    ,No_physical_purity_risc                                                  
+    ,Fruits_per_plant_female                                                  
+    ,Seeds_per_fruit_female                                                  
+    ,Fruits_per_plant_male                                                  
+    ,Seeds_per_fruit_male                                        
+    ,Placed_indicator                                                  
+    ,Update_last_estimate_value                                                  
+    ,Product_quantity_pieces                                                  
+    ,Start_text                                         
+    ,Last_updated_indicator                                                
+ )                                                  
+ values                                                  
+ (                                                  
+     @last_inspection_number                                                  
+    ,@Field_number                  
+    ,'' -- '' for Growth_stage_code                                                  
+    ,@Inspection_date_planned                                                  
+    ,@Date_created                                                   
+    ,@Created_by                                                  
+    ,@last_Added_id                                                  
+    ,@Inspection_protocol_number                                                  
+    ,@Date_inspected                                                  
+   ,@Inspected_by                                                  
+    ,1 --for Inspected_indicator                           
+    ,@Facility_number                                                  
+    ,@Field_book_number                                                  
+    ,@Surface_field_previous                                                 
+    ,@Quantity_female                                                  
+    ,@Surface_female                                                  
+    ,@Yield_per_plant_female                                                  
+    ,@Yield_per_surface_female                                                  
+    ,@Number_of_plants_female                                                  
+    ,@Density_female                                                  
+    ,@Quantity_male                                                  
+    ,@Surface_male                                                  
+    ,@Yield_per_plant_male                                                  
+    ,@Yield_per_surface_male                                                  
+    ,@Number_of_plants_male                         
+    ,@Density_male                                                 
+    ,@Germination_risk                                                  
+    ,@Sanitary_risk                                                  
+    ,@Genetic_purity_risk                                                  
+    ,@Physical_purity_risk                                                  
+    ,@Quantity_female +@Quantity_male                                                 
+    ,@Product_quantity_weight_previous                                  
+    ,@Surface_female                                                  
+    ,@Start_status_indicator                                                  
+    ,@Crop_year_perennial                                                  
+    ,@Percentage_expected                                                  
+    ,@Percentage_expected_male                                                      
+    ,@No_genetic_purity_risc                                                  
+    ,@No_germination_risc                                                  
+    ,@No_Sanitary_risc                                                  
+    ,@No_physical_purity_risc                                                  
+    ,@Fruits_per_plant_female                                                  
+    ,@Seeds_per_fruit_female                                                  
+    ,@Fruits_per_plant_male                                                  
+    ,@Seeds_per_fruit_male                                                  
+    ,@Placed_indicator                                                  
+    ,1--@Update_last_estimate_value                                                  
+    ,@Product_quantity_pieces                                                  
+    ,null --@Start_text                                                  
+    ,1 -- for Last_updated_indicator                
+ )                                           
+  set @Status=1                      
+  set @Responsefield_number=@Field_number                                            
+  set @Responseactivity_list_id=@last_Added_id                                            
+  set @Responseinspection_protocol_number=@Inspection_protocol_number                                            
+  set @Responseplanneddate=@Inspection_date_planned                                           
+  set @Responseinspection_number=@last_inspection_number                                                                             
+end                                                                                        
+end         
+        
+        
+        
+        
+        
+        
+        
+        
+                                                      
+                            
+         
+        
+        
+        
+        
+        
+        
+        
+        

@@ -1,0 +1,16 @@
+superadmin@gmail.com
+test123
+{
+  "surveyName": "New Survey Test",
+  "surveyType": "Games",
+  "surveyStatus": "Active",
+  "surveyQuestion": "what is capital of india?",
+  "surveyQuestionType": "radio",
+  "isTriggered": false,
+  "surveyGame": "Game 1",
+  "Surveyoption": [
+    "Delhi",
+    "Mumbai",
+    "Chennai"
+  ]
+}

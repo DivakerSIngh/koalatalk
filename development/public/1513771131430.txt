@@ -1,0 +1,15 @@
+1- dashboard -> RFI--> click on RFI----> overview tab-->document icon --Detail tab-->save button not working
+
+
+
+Page to be changed in server
+
+projectcontroller.cs
+project/index.chtml
+script/projectjs.js
+
+reminder/_ReminderTask.chtml
+reminder/_ReminderMail.chtml
+
+Script/ReminderTask.js
+content/css/reminder.css

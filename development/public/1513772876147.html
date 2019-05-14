@@ -1,0 +1,151 @@
+<div class="page-breadcrumb-wrap">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item active">Add Survey</li>
+  </ol>
+</div>
+<div class="clearfix"></div>
+<div class="pageDataWrap">
+  <div class="pageDataInner">
+    <form (ngSubmit)="saveSurvey(frm.value)" #frm="ngForm" novalidate>
+      <div class="form-group">
+        <div class="row">
+          <div class="col-sm-8 col-xs-6">
+            <label>Survey Name</label>
+            <div class="formInputWrap">
+              <input type="text" name="surveyName" [(ngModel)]="surveyName" class="form-control" required minlength="4" maxlength="100"
+                placeholder="Enter Survey Name">
+            </div>
+          </div>
+
+          <div class="col-sm-8 col-xs-6">
+            <label>Survey Type</label>
+            <div class="formInputWrap">
+              <select class="form-control" (change)="changeSurveyType()" name="surveyType" [(ngModel)]="surveyType" required minlength="1">
+                <option value="Games">Games</option>
+                <option value="Common">Common</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-sm-8 col-xs-6" *ngIf="ifgames">
+            <label>Game</label>
+            <div class="formInputWrap">
+              <select class="form-control" name="surveyGame" [(ngModel)]="surveyGame" required minlength="1" (change)="ChangesurveryGame()">
+                <option value="Game 1">Game 1</option>
+                <option value="Game 2">Game 2</option>
+                <option value="Game 3">Game 3</option>
+                <option value="Game 4">Game 4</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-8 col-xs-6">
+            <label>Status</label>
+            <div class="formInputWrap">
+              <select class="form-control" name="surveyStatus" [(ngModel)]="surveyStatus" required minlength="1">
+                <option value="Active">Active</option>
+                <option value="Inactive">Inactive</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-sm-8 col-xs-6">
+            <label>Add Question</label>
+            <div class="formInputWrap">
+              <div class="form-input-wrap">
+
+                <input type="text" class="form-control" placeholder="Add Quesion" name="surveyQuestion" [(ngModel)]="surveyQuestion" value=""
+                  required minlength="1">
+
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-8 col-xs-6">
+            <label>Question Type</label>
+            <div class="formInputWrap">
+              <select class="form-control" (change)="changeQuestionType(surveyQuestionType)" name="surveyQuestionType" [(ngModel)]="surveyQuestionType"
+                required minlength="1">
+                <option value="text">Text</option>
+                <option value="radio">RadioButton</option>
+                <option value="checkbox">Checkbox</option>
+                <option value="dropDown">DropDown</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- new code -->
+          <div *ngFor="let question of questionoptions;let i=index">
+
+            <!-- *ngIf="surveyQuestionType!='text'" -->
+            <div class="col-sm-8 col-xs-12">
+              <label>options {{i+1}}</label>
+              <div class="formInputWrap">
+                <input type="text" class="form-control" placeholder="Add option {{i+1}}" name="surveyQuestionOption{{i}}" [(ngModel)]="question.values"
+                  value="" required minlength="1">
+              </div>
+            </div>
+            <div class="col-sm-2 col-xs-12">
+              <div class="formInputWrap">
+                <div class="form-input-wrap" *ngIf="i==0">
+
+                  <i class="fa fa-plus-circle" aria-hidden="true" (click)="addQustionLoop()"></i>
+                </div>
+                <div class="form-input-wrap" *ngIf="i!=0">
+                  <i class="fa fa-window-close" aria-hidden="true" (click)="deleteQuestion(i)"></i>
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+          <div class="col-sm-8 col-xs-12">
+            <label>Is Triggred</label>
+            <div class="formInputWrap">
+              <input type="checkbox" name="isTriggred" [(ngModel)]="isTriggred" (change)="isTriggerEvent()">
+              <span style="color:red">{{istriggerStatus}}</span>
+            </div>
+          </div>
+        <div *ngIf="isTriggredOrNot">
+          <div class="col-sm-8 col-xs-6" >
+            <label>Perent Type Survey</label>
+            <div class="formInputWrap">
+              <select data-live-search="true" data-live-search-style="startsWith" class="form-control ddlselect2 selectpicker" name="parentsurvey"  required minlength="1" [(ngModel)]="parentTypeSurvey" (change)="ChangeParentTypeSurvey()">
+                <option *ngFor="let parent of parentSurvey;let i=index" value="{{parent._id}}">{{parent.surveyName}}</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="col-sm-8 col-xs-6" >
+              <label>Is Option Based</label>
+              <div class="formInputWrap">
+                  <input type="checkbox" name="isOptionBased" [(ngModel)]="isOptionBased" (change)="isOptionBasedMethod()">
+                  <span style="color:red">{{isOptionBasedStatus}}</span>
+              </div>
+            </div>
+
+            <div class="col-sm-8 col-xs-6" *ngIf="isOptionBasedOrNot">
+                <label>Choose options</label>
+                <div class="formInputWrap">
+                    <select name="chooseOption" [(ngModel)]="optionBasedData" required minlength="1" >
+                        <option value="default">Default</option>
+                        <option *ngFor="let option of optionBasedDataOptions;let i=index"
+                         value="{{option.value}}">{{option.value}}</option>
+                      </select>
+                </div>
+              </div>
+
+        </div>
+
+          
+        </div>
+      </div>
+      <div class="form-button-wrap">
+        <button type="button" class="btn resetBtn" (click)="resetForm()">Reset</button>
+        <button type="submit" class="btn themeBtn" [ngClass]="{'disable': frm.invalid}" [disabled]="frm.invalid">
+          Save
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
